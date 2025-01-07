@@ -1,4 +1,6 @@
-- [ ] Wrote tests? - [ ] Implemented the code? - [ ] Reviewed my code?
+- [ ] Wrote tests?
+- [ ] - [ ] Implemented the code?
+- [ ] - [ ] Reviewed my code?
 
 Necessary check marks:
 
