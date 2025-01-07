@@ -1,2 +1,7 @@
-class Api::v1::CustomersController < ApplicationController
+class Api::v1::MerchantsController < ApplicationController
+
+  def show
+    render json: MerchantSerializer.new(Merchant.find(params[:id])).serializable_hash
+  end
+
 end
