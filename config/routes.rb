@@ -10,7 +10,8 @@ Rails.application.routes.draw do
 
   get "/api/v1/items", to: "api/v1/items#index"
   get "/api/v1/items/:id", to: "api/v1/items#show"
+  post "/api/v1/items", to: "api/v1/items#create"
 
   get "/api/v1/merchants/:id", to: "api/v1/merchants#show"
-
+  post "/api/v1/merchants", to: "api/v1/merchants#create"
 end
