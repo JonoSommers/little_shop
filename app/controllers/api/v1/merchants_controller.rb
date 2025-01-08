@@ -1,5 +1,9 @@
 class Api::V1::MerchantsController < ApplicationController
   rescue_from ActionController::ParameterMissing, with: :render_unprocessable_entity
+  
+  def show
+    render json: MerchantSerializer.new(Merchant.find(params[:id])).serializable_hash
+  end
 
   def create
     merchant = Merchant.new(merchant_params)
