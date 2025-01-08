@@ -15,6 +15,8 @@ describe "Items", type: :request do
     post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
 
     expect(response).to be_successful
+    expect(response).to have_http_status(:created)
+    
     
     new_item = Item.last
 
