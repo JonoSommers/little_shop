@@ -8,16 +8,18 @@ class Api::V1::MerchantsController < ApplicationController
             merchants = merchants.order(:created_at)
         end
 
-        if params[:count] == 'true'
+        if params[:status] == 'returned'
             
         end
 
-        if params[:status] == 'retruned'
-            invoices.each do |invoice|
-                merchants.where
-
+        if params[:count]
+            render json: MerchantSerializer.new(merchants, {params: {item_count: params[:count]}})
         end
+    end
 
-        render json: MerchantSerializer.new(merchants, options)
+    private
+
+    def merchant_params
+        params.require(:merchant).permit(:name)
     end
 end
