@@ -72,7 +72,7 @@ RSpec.describe "Item endpoints", type: :request do
       delete "/api/v1/items/#{item1.id}"
 
       expect(Item.all.length).to eq(1)
-      expect{ Song.find(item1.id) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect{ Item.find(item1.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
