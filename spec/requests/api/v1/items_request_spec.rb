@@ -17,7 +17,6 @@ describe "Items", type: :request do
     expect(response).to be_successful
     expect(response).to have_http_status(:created)
     
-    
     new_item = Item.last
 
     expect(new_item.name).to eq(item_params[:name])
