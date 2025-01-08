@@ -11,6 +11,7 @@ describe "Merchants", type: :request do
     post "/api/v1/merchants", headers: headers, params: JSON.generate(merchant: merchant_params)
 
     expect(response).to be_successful
+    expect(response).to have_http_status(:created)
 
     new_merchant = Merchant.last
 
