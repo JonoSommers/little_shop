@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Merchant endpoints", type: :request do
-  describe "FETCH /merchants/:id" do
+  describe "GET /merchants/:id" do
     it 'can fetch a single record at a specific id' do
       id = Merchant.create( name: "Lula Faye" ).id.to_s
 
@@ -61,6 +61,20 @@ RSpec.describe "Merchant endpoints", type: :request do
 
       expect(response).to_not be_successful
       expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
+
+  describe "DELETE /merchants/:id" do
+    it 'can delete a select merchant' do
+      merchant1 = Merchant.create( name: "Lula Faye")
+      merchant2 = Merchant.create( name: "Michaels Craft Store")
+
+      expect(Merchant.all.length).to eq(2)
+
+      delete "/api/v1/merchants/#{merchant2.id}"
+
+      expect(Merchant.all.length).to eq(1)
+      expect{ Merchant.find(merchant2.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end

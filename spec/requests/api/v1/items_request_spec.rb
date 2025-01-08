@@ -36,7 +36,7 @@ RSpec.describe "Item endpoints", type: :request do
   end
   
   describe "POST /item" do
-    it 'can create a poster' do
+    it 'can create an item' do
       merchant = Merchant.create!(name: "Test Merchant")
       item_params = {
         "name": "Banana",
@@ -58,6 +58,21 @@ RSpec.describe "Item endpoints", type: :request do
       expect(new_item.description).to eq(item_params[:description])
       expect(new_item.unit_price).to eq(item_params[:unit_price])
       expect(new_item.merchant_id).to eq(item_params[:merchant_id])
+    end
+  end
+
+  describe "DELETE /items/:id" do
+    it 'can delete a select item' do
+      merchant = Merchant.create( name: "Lula Faye")
+      item1 = Item.create(  name: "Crochet Hook", description: "5mm hook", unit_price: 5.99, merchant_id: merchant.id )
+      item2 = Item.create( name: "Cashmere Yarn", description: "A teal green yarn", unit_price: 19.99, merchant_id: merchant.id )
+
+      expect(Item.all.length).to eq(2)
+
+      delete "/api/v1/items/#{item1.id}"
+
+      expect(Item.all.length).to eq(1)
+      expect{ Item.find(item1.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
