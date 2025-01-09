@@ -1,6 +1,7 @@
 class Api::V1::MerchantsController < ApplicationController
   rescue_from ActionController::ParameterMissing, with: :render_unprocessable_entity
-  
+  rescue_from ActiveRecord::RecordNotDestroyed, with: :render_unprocessable_entity 
+
   def show
     render json: MerchantSerializer.new(Merchant.find(params[:id])).serializable_hash
   end
@@ -16,7 +17,8 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def destroy
-    render json: Merchant.destroy(params[:id])
+    Merchant.destroy(params[:id]) 
+    head :no_content
   end
 
   private
