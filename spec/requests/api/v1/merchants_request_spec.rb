@@ -82,7 +82,7 @@ RSpec.describe "Merchant endpoints", type: :request do
       expect{ Merchant.find(@merchant2.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it 'will delete all invoices and items when select merchant is deleted' do
+    it 'will delete all child records when select merchant is deleted' do
       expect(@merchant1.items).to eq([@item1, @item2])
       
       # require 'pry'; binding.pry

@@ -62,17 +62,32 @@ RSpec.describe "Item endpoints", type: :request do
   end
 
   describe "DELETE /items/:id" do
-    it 'can delete a select item' do
-      merchant = Merchant.create( name: "Lula Faye")
-      item1 = Item.create(  name: "Crochet Hook", description: "5mm hook", unit_price: 5.99, merchant_id: merchant.id )
-      item2 = Item.create( name: "Cashmere Yarn", description: "A teal green yarn", unit_price: 19.99, merchant_id: merchant.id )
+    before(:each) do
+      @merchant = Merchant.create( name: "Lula Faye")
+      @item1 = Item.create(  name: "Crochet Hook", description: "5mm hook", unit_price: 5.99, merchant_id: @merchant.id )
+      @item2 = Item.create( name: "Cashmere Yarn", description: "A teal green yarn", unit_price: 19.99, merchant_id: @merchant.id )
+      @customer1 = Customer.create( first_name: "Cara", last_name: "Jones" )
+      @invoice1 = Invoice.create( customer_id: @customer1.id, merchant_id: @merchant.id, status: "sent" )
+      @invoice_item = InvoiceItem.create( item_id: @item1.id, invoice_id: @invoice1.id, quantity: 1, unit_price: @item1.unit_price )
+    end
 
+    it 'can delete a select item' do
       expect(Item.all.length).to eq(2)
 
-      delete "/api/v1/items/#{item1.id}"
+      delete "/api/v1/items/#{@item1.id}"
 
       expect(Item.all.length).to eq(1)
-      expect{ Item.find(item1.id) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect{ Item.find(@item1.id) }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'can cascade delete child records when an item is deleted' do
+      expect(InvoiceItem.all).to eq([@invoice_item])
+
+      delete "/api/v1/items/#{@item1.id}"
+
+      expect{ InvoiceItem.find(@invoice_item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+
+      # Will want to add functionality that will change the invoice status to "item unavailable"
     end
   end
 end
