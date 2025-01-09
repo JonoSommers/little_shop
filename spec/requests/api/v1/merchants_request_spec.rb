@@ -32,7 +32,7 @@ describe 'Merchants', type: :request do
         end
     end
 
-    it 'lists all merchants in the database' do
+    it 'lists all merchants in the database sorted by created_at' do
 
         merchant1 = Merchant.create(
             name: 'Jono'
@@ -62,7 +62,7 @@ describe 'Merchants', type: :request do
     it 'lists all merchants that have had items from an invoice returned' do
 
         customer = Customer.create(
-            first_name: 'Jono'
+            first_name: 'Jono',
             last_name: 'Sommers'
         )
 
@@ -79,14 +79,14 @@ describe 'Merchants', type: :request do
         )
 
         invoice1 = Invoice.create(
-            customer_id: customer.id
-            merchant_id: merchant1.id
+            customer_id: customer.id,
+            merchant_id: merchant1.id,
             status: 'returned'
         )
 
         invoice1 = Invoice.create(
-            customer_id: customer.id
-            merchant_id: merchant2.id
+            customer_id: customer.id,
+            merchant_id: merchant2.id,
             status: 'returned'
         )
 
@@ -146,7 +146,7 @@ describe 'Merchants', type: :request do
         expect(merchants[:data].length).to eq(3)
         expect(merchants[:meta][:count]).to eq(3)
 
-        expect(merchants[:data].first[:item_count]).to eq(3)
+        expect(merchants[:data].first[:attributes][:item_count]).to eq(2)
 
         merchants[:data].each do |merchant|
             expect(merchant).to have_key(:id)
