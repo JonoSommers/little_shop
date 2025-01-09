@@ -6,14 +6,19 @@ class Api::V1::MerchantsController < ApplicationController
 
         if params[:sorted] == 'age'
             merchants = merchants.order(:created_at)
-        end
+            render json: MerchantSerializer.new(merchants, options)
 
-        if params[:status] == 'returned'
-            
-        end
+        elsif params[:status] == 'returned'
+            merchants = merchants.joins(items: { invoice_items: :invoice })
+                           .where(invoice_items: { status: 'returned' })
+                           .distinct
+            render json: MerchantSerializer.new(merchants, options)
 
-        if params[:count]
+        elsif params[:count]
             render json: MerchantSerializer.new(merchants, {params: {item_count: params[:count]}})
+
+        else
+            render json: MerchantSerializer.new(merchants, options)
         end
     end
 
