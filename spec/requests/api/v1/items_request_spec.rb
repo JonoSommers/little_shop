@@ -76,7 +76,7 @@ RSpec.describe "Item endpoints", type: :request do
     end
   end
 
-  describe "PATCH /items/:id" do
+  describe "PUT /items/:id" do
     xit 'can update the corresponding item with whichever details are provided by the user' do
       merchant1 = Merchant.create(
         name: 'Jono'
