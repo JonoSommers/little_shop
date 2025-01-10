@@ -68,9 +68,11 @@ RSpec.describe "Merchant endpoints", type: :request do
     before(:each) do
       @merchant1 = Merchant.create( name: "Lula Faye")
       @merchant2 = Merchant.create( name: "Michaels Craft Store")
-
       @item1 = Item.create(  name: "Crochet Hook", description: "5mm hook", unit_price: 5.99, merchant_id: @merchant1.id )
       @item2 = Item.create( name: "Cashmere Yarn", description: "A teal green yarn", unit_price: 19.99, merchant_id: @merchant1.id )
+      @customer1 = Customer.create( first_name: "Cara", last_name: "Jones" )
+      @invoice1 = Invoice.create( customer_id: @customer1.id, merchant_id: @merchant1.id, status: "sent" )
+      @invoice_item = InvoiceItem.create( item_id: @item1.id, invoice_id: @invoice1.id, quantity: 1, unit_price: @item1.unit_price )
     end
 
     it 'can delete a select merchant' do
@@ -85,10 +87,10 @@ RSpec.describe "Merchant endpoints", type: :request do
     it 'will delete all child records when select merchant is deleted' do
       expect(@merchant1.items).to eq([@item1, @item2])
       
-      # require 'pry'; binding.pry
       delete "/api/v1/merchants/#{@merchant1.id}"
       expect{ Item.find(@item1.id) }.to raise_error(ActiveRecord::RecordNotFound)
       expect{ Item.find(@item2.id) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect{InvoiceItem.find(@invoice_item.id)}.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
