@@ -88,7 +88,7 @@ RSpec.describe "Merchant endpoints", type: :request do
 
       merchant_params = {name: 'Merlin'}
       headers = {"CONTENT_TYPE" => "application/json"}
-      patch "/api/v1/posters/#{id}", headers: headers, params: JSON.generate({merchant: merchant_params})
+      patch "/api/v1/merchants/#{id}", headers: headers, params: JSON.generate({merchant: merchant_params})
       merchant1 = Merchant.find_by(id: id)
 
       expect(response).to be_successful
