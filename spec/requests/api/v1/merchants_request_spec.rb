@@ -238,4 +238,23 @@ RSpec.describe "Merchant endpoints", type: :request do
       expect{ Merchant.find(merchant2.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  describe "PATCH /merchants/:id" do
+    xit 'can update the corresponding merchant with whichever details are provided by the user' do
+      merchant1 = Merchant.create(
+        name: 'Jono'
+      )
+      id = merchant1.id
+      previous_name = merchant1.name
+
+      merchant_params = {name: 'Merlin'}
+      headers = {"CONTENT_TYPE" => "application/json"}
+      patch "/api/v1/merchants/#{id}", headers: headers, params: JSON.generate({merchant: merchant_params})
+      merchant1 = Merchant.find_by(id: id)
+
+      expect(response).to be_successful
+      expect(merchant1.name).to_not eq(previous_name)
+      expect(merchant1.name).to eq('Merlin')
+    end
+  end
 end

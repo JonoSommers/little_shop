@@ -170,4 +170,32 @@ RSpec.describe "Item endpoints", type: :request do
       expect{ Item.find(item1.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  describe "PUT /items/:id" do
+    xit 'can update the corresponding item with whichever details are provided by the user' do
+      merchant1 = Merchant.create(
+        name: 'Jono'
+      )
+
+      item1 = Item.create(
+        name: 'Desk Lamp',
+        description: 'make bright',
+        unit_price: 5.99,
+        merchant_id: merchant1.id
+
+      )
+      
+      id = item1.id
+      previous_name = item1.name
+
+      item_params = {name: 'a stick'}
+      headers = {"CONTENT_TYPE" => "application/json"}
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+      item1 = Item.find_by(id: id)
+
+      expect(response).to be_successful
+      expect(item1.name).to_not eq(previous_name)
+      expect(item1.name).to eq('a stick')
+    end
+  end
 end
