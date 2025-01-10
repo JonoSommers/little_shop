@@ -95,7 +95,7 @@ RSpec.describe "Item endpoints", type: :request do
 
       item_params = {name: 'a stick'}
       headers = {"CONTENT_TYPE" => "application/json"}
-      patch "/api/v1/posters/#{id}", headers: headers, params: JSON.generate({item: item_params})
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
       item1 = Item.find_by(id: id)
 
       expect(response).to be_successful
