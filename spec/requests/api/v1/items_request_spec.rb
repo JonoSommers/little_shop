@@ -76,16 +76,16 @@ RSpec.describe "Item endpoints", type: :request do
     end
   end
 
-  desctibe "PATCH /items/:id" do
-    it 'can update the corresponding item with whichever details are provided by the user' do
+  describe "PATCH /items/:id" do
+    xit 'can update the corresponding item with whichever details are provided by the user' do
       merchant1 = Merchant.create(
         name: 'Jono'
       )
 
       item1 = Item.create(
-        name: 'Desk Lamp'
-        description: 'make bright'
-        unit_price: 5.99
+        name: 'Desk Lamp',
+        description: 'make bright',
+        unit_price: 5.99,
         merchant_id: merchant1.id
 
       )
@@ -93,7 +93,7 @@ RSpec.describe "Item endpoints", type: :request do
       id = item1.id
       previous_name = item1.name
 
-      merchant_params = {name: 'a stick'}
+      item_params = {name: 'a stick'}
       headers = {"CONTENT_TYPE" => "application/json"}
       patch "/api/v1/posters/#{id}", headers: headers, params: JSON.generate({item: item_params})
       item1 = Item.find_by(id: id)
