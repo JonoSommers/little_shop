@@ -187,7 +187,7 @@ RSpec.describe "Item endpoints", type: :request do
   end
 
   describe "PUT /items/:id" do
-    xit 'can update the corresponding item with whichever details are provided by the user' do
+    it 'can update the corresponding item with whichever details are provided by the user' do
       merchant1 = Merchant.create(
         name: 'Jono'
       )
@@ -205,7 +205,7 @@ RSpec.describe "Item endpoints", type: :request do
 
       item_params = {name: 'a stick'}
       headers = {"CONTENT_TYPE" => "application/json"}
-      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+      put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
       item1 = Item.find_by(id: id)
 
       expect(response).to be_successful
