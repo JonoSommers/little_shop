@@ -2,11 +2,16 @@ class Api::V1::InvoicesController < ApplicationController
 
     def index
         invoices = Invoice.all
-        merchants = Merchant.all
         options = {}
-        options[:meta] = {count: invoices.count}
-        invoices = Invoice.joins(:merchant).where(merchant: {id: params[:merchant_id]}).distinct
-        invoices = invoices.where(status: params[:status])
-        render json: InvoiceSerializer.new(invoices, options)
+        merchant_invoices = invoices.where(merchant_id: params[:merchant_id])
+        if params[:status] == nil
+            options[:meta] = {count: merchant_invoices.count}
+            render json: InvoiceSerializer.new(merchant_invoices, options)
+        else
+            target_invoices = invoices.where(merchant_id: params[:merchant_id], status: params[:status])
+            options[:meta] = {count: target_invoices.count}
+            # binding.pry
+            render json: InvoiceSerializer.new(target_invoices, options)
+        end
     end
 end
