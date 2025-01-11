@@ -14,6 +14,15 @@ class Api::V1::ItemsController < ApplicationController
   def show
     render json: ItemSerializer.new(Item.find(params[:id])).serializable_hash
   end
+
+  def update
+    item = Item.find(params[:id])
+    if item.update(item_params)
+      render json: ItemSerializer.new(item)
+    else
+      render json: { error: item.errors.full_messages }, status: :not_found
+    end
+  end
   
   def create
     item = Item.create(item_params)
