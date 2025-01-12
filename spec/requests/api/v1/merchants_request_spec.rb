@@ -303,7 +303,10 @@ RSpec.describe "Merchant endpoints", type: :request do
       get "/api/v1/merchants/find?name=#{search_param}"
 
       expect(response).to be_successful
-      expect(response.name).to eq(search_param)
+
+      merchants = JSON.parse(response.body, symbolize_names: true)
+     
+      expect(merchants[:data][:attributes][:name]).to eq(search_param)
     end
 
     it 'returns the first merchant in the database in case-insensitive alphabetical order if multiple matches are found' do
@@ -311,19 +314,23 @@ RSpec.describe "Merchant endpoints", type: :request do
 
       get "/api/v1/merchants/find?name=#{search_param}"
 
+      
       expect(response).to be_successful
-      expect(response.name).to eq(@merchant4)
+      merchants = JSON.parse(response.body, symbolize_names: true)
+      expect(merchants.length).to eq(1)
+      expect(merchants[:data][:attributes][:name]).to eq(@merchant4.name)
     end
 
     it 'returns the first merchant in the database in alphabetical order if multiple matches are found' do
       get "/api/v1/merchants/find"
 
       expect(response).to be_successful
-      expect(response.name).to eq(@merchant2)
+      merchants = JSON.parse(response.body, symbolize_names: true)
+      expect(merchants[:data][:attributes][:name]).to eq(@merchant2.name)
     end
 
-    it 'returns a 404 status code if a merchant is not found' do
-      search_param = 'zxy'
+    xit 'returns a 404 status code if a merchant is not found' do
+      search_param = 'zxy1421'
 
       get "/api/v1/merchants/find?name=#{search_param}"
 

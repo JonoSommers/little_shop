@@ -52,6 +52,13 @@ class Api::V1::MerchantsController < ApplicationController
     head :no_content
   end
 
+  def find
+    merchants = Merchant.where("name ILIKE ?", "%#{params[:name]}%").order(:name)
+    merchant = merchants.first
+    # binding.pry
+    render json: MerchantSerializer.new(merchant)
+  end
+
   private
 
   def merchant_params
