@@ -220,5 +220,21 @@ RSpec.describe "Item endpoints", type: :request do
       expect(item1.name).to_not eq(previous_name)
       expect(item1.name).to eq('a stick')
     end
+
+    it 'returns a 404 status code for a string id' do
+      test_id = '21'
+      put "/api/v1/items/#{test_id}"
+
+      expect(response.status).to eq(404) 
+      expect{ Item.find(test_id) }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'returns a 404 status code for a bad integer id' do
+      test_id = 999
+      put "/api/v1/items/#{test_id}"
+
+      expect(response.status).to eq(404) 
+      expect{ Item.find(test_id) }.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 end
