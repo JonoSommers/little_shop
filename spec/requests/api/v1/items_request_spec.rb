@@ -128,6 +128,14 @@ RSpec.describe "Item endpoints", type: :request do
       expect(itemData[:attributes][:merchant_id]).to be_a(Integer)
       expect(itemData[:attributes][:merchant_id]).to eq(merchant_id)
     end
+
+    it 'returns a 404 status code if item is not found' do
+      test_id = 30
+      get "/api/v1/items/#{test_id}"
+
+      expect{ Item.find(test_id) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect(response.status).to eq(404) 
+    end
   end
   
   describe "POST /item" do
