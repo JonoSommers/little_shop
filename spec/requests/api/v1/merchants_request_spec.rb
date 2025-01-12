@@ -280,5 +280,21 @@ RSpec.describe "Merchant endpoints", type: :request do
       expect(merchant1.name).to_not eq(previous_name)
       expect(merchant1.name).to eq('Merlin')
     end
+
+    it 'raises a 404 error for a bad merchant id' do
+      test_id = 21
+      patch "/api/v1/merchants/#{test_id}"
+
+      expect(response.status).to eq(404)
+      expect{ Merchant.find(test_id)}.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'raises a 404 error for a string id' do
+      test_id = '21'
+      patch "/api/v1/merchants/#{test_id}"
+
+      expect(response.status).to eq(404)
+      expect{ Merchant.find(test_id)}.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 end
