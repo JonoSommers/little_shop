@@ -237,4 +237,29 @@ RSpec.describe "Item endpoints", type: :request do
       expect{ Item.find(test_id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  describe 'Unrestful endpoint' do
+    before(:each) do
+      @item1 = Item.create(
+        name: "Item Nemo Facere",
+        description: "Sunt eum id eius magni consequuntur delectus veritatis. Quisquam laborum illo ut ab. Ducimus in est id voluptas autem.",
+        unit_price: 42.91,
+        merchant_id: merchant.id
+      )
+      @item2 = Item.create(
+        name: "Item Expedita Aliquam",
+        description: "Voluptate aut labore qui illum tempore eius. Corrupti cum et rerum. Enim illum labore voluptatem dicta consequatur. Consequatur sunt consequuntur ut officiis.",
+        unit_price: 687.23,
+        merchant_id: merchant.id
+      )
+      @item3 = Item.create(
+        name: "Item Provident At",
+        description: "Numquam officiis reprehenderit eum ratione neque tenetur. Officia aut repudiandae eum at ipsum doloribus. Iure minus itaque similique. Ratione dicta alias asperiores minima ducimus nesciunt at.",
+        unit_price: 159.25,
+        merchant_id: merchant.id
+      )
+    end
+    it '' do
+    end
+  end
 end

@@ -3,18 +3,9 @@ require 'rails_helper'
 RSpec.describe "Merchant endpoints", type: :request do
   describe 'Merchants', type: :request do
     it 'lists all merchants in the database' do
-
-        merchant1 = Merchant.create(
-            name: 'Jono'
-        )
-
-        merchant2 = Merchant.create(
-            name: 'Dustin'
-        )
-
-        merchant3 = Merchant.create(
-            name: 'Elysa'
-        )
+        merchant1 = Merchant.create( name: 'Jono' )
+        merchant2 = Merchant.create( name: 'Dustin' )
+        merchant3 = Merchant.create( name: 'Elysa')
 
         get "/api/v1/merchants"
 
@@ -295,6 +286,48 @@ RSpec.describe "Merchant endpoints", type: :request do
 
       expect(response.status).to eq(404)
       expect{ Merchant.find(test_id)}.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe 'Unrestful endpoint' do
+    before(:each) do
+      @merchant1 = Merchant.create( name: 'Jono' )
+      @merchant2 = Merchant.create( name: 'Dustin' )
+      @merchant3 = Merchant.create( name: 'Elysa')
+      @merchant4 = Merchant.create( name: 'Joe')
+    end
+
+    it 'can find a single merchant that matches the search param' do
+      search_param = 'Jono'
+      
+      get "/api/v1/merchants/find?name=#{search_param}"
+
+      expect(response).to be_successful
+      expect(response.name).to eq(search_param)
+    end
+
+    it 'returns the first merchant in the database in case-insensitive alphabetical order if multiple matches are found' do
+      search_param = 'jo'
+
+      get "/api/v1/merchants/find?name=#{search_param}"
+
+      expect(response).to be_successful
+      expect(response.name).to eq(@merchant4)
+    end
+
+    it 'returns the first merchant in the database in alphabetical order if multiple matches are found' do
+      get "/api/v1/merchants/find"
+
+      expect(response).to be_successful
+      expect(response.name).to eq(@merchant2)
+    end
+
+    it 'returns a 404 status code if a merchant is not found' do
+      search_param = 'zxy'
+
+      get "/api/v1/merchants/find?name=#{search_param}"
+
+      expect(response.status).to eq(404)
     end
   end
 end
