@@ -331,8 +331,7 @@ RSpec.describe "Item endpoints", type: :request do
       items = JSON.parse(response.body, symbolize_names: true)
       expect(items.count).to eq(2)
       items[:data].each do |item|
-        expect(item[:attributes][:unit_price]).to satisfy { |unit_price| unit_price >= search_param_min}
-        expect(item[:attributes][:unit_price]).to satisfy { |unit_price| unit_price <= search_param_max }
+        expect(item[:attributes][:unit_price]).to satisfy { |unit_price| unit_price >= search_param_min && unit_price <= search_param_max }
         expect(item[:id].to_i).to satisfy { |id| min_max_price_id_array.include?(id)}
       end
     end
