@@ -256,7 +256,7 @@ RSpec.describe "Merchant endpoints", type: :request do
   end
 
   describe "PATCH /merchants/:id" do
-    xit 'can update the corresponding merchant with whichever details are provided by the user' do
+    it 'can update the corresponding merchant with whichever details are provided by the user' do
       merchant1 = Merchant.create(
         name: 'Jono'
       )
