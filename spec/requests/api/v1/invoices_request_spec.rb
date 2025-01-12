@@ -66,8 +66,23 @@ RSpec.describe "Invoice endpoints", type: :request do
             expect(response).to be_successful
 
             invoices = JSON.parse(response.body, symbolize_names: true)
-            
+
             expect(invoices[:data].length).to eq(1)
+        end
+
+        it 'returns a "404" error when a merchant_id is invalid or not found' do
+
+            merchant1 = Merchant.create(
+                name: 'Jono'
+            )
+
+            merchant1.destroy
+
+            get "/api/v1/merchants/#{merchant1.id}/invoices"
+
+            expect(response.status).to eq(404)
+
+            expect{ Merchant.find(:id) }.to raise_error(ActiveRecord::RecordNotFound)
         end
     end
 end

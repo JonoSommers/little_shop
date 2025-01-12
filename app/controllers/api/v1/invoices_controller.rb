@@ -14,4 +14,10 @@ class Api::V1::InvoicesController < ApplicationController
             render json: InvoiceSerializer.new(target_invoices, options)
         end
     end
+
+    private
+
+    def invoice_params
+        params.require(:invoice).permit(:customer_id, :merchant_id, :status)
+    end
 end
