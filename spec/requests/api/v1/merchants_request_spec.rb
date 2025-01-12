@@ -329,12 +329,14 @@ RSpec.describe "Merchant endpoints", type: :request do
       expect(merchants[:data][:attributes][:name]).to eq(@merchant2.name)
     end
 
-    xit 'returns a 404 status code if a merchant is not found' do
+    it 'returns a 200 status code if a merchant is not found and data is nil' do
       search_param = 'zxy1421'
 
       get "/api/v1/merchants/find?name=#{search_param}"
 
-      expect(response.status).to eq(404)
+      merchant = JSON.parse(response.body, symbolize_names: true)
+      expect(response.status).to eq(200)
+      expect(merchant[:data]).to eq(null)
     end
   end
 end

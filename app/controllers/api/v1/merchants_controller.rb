@@ -2,6 +2,7 @@ class Api::V1::MerchantsController < ApplicationController
   rescue_from ActionController::ParameterMissing, with: :render_unprocessable_entity
   rescue_from ActiveRecord::RecordNotDestroyed, with: :render_unprocessable_entity 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  # rescue_from ActiveRecord::AssertionError, with: :assertion_error
   
   def index
       merchants = Merchant.all
@@ -55,7 +56,6 @@ class Api::V1::MerchantsController < ApplicationController
   def find
     merchants = Merchant.where("name ILIKE ?", "%#{params[:name]}%").order(:name)
     merchant = merchants.first
-    # binding.pry
     render json: MerchantSerializer.new(merchant)
   end
 
@@ -72,4 +72,8 @@ class Api::V1::MerchantsController < ApplicationController
   def record_not_found(exception)
     render json: { message: exception.message, errors: [exception.message] }, status: :not_found
   end
+
+  # def assertion_error(exception)
+  #   render json: { message: exception.message, errors: [exception.message] }, status: :internal_server_error
+  # end
 end

@@ -339,7 +339,7 @@ RSpec.describe "Item endpoints", type: :request do
     xit 'returns a 404 status code if an item is not found that satifies the name param' do
       search_param = 'zxy'
 
-      get get "/api/v1/items/find_all?name=#{search_param}"
+      get "/api/v1/items/find_all?name=#{search_param}"
 
       expect(response.status).to eq(404)
     end
@@ -347,7 +347,7 @@ RSpec.describe "Item endpoints", type: :request do
     xit 'returns a 404 status code if an item is not found with a price greater than or equal to the min_price search param' do
       search_param = 9999999
 
-      get get "/api/v1/items/find_all?min_price=#{search_param}"
+      get "/api/v1/items/find_all?min_price=#{search_param}"
 
       expect(response.status).to eq(404)
     end
@@ -355,7 +355,7 @@ RSpec.describe "Item endpoints", type: :request do
     xit 'returns a 404 status code if an item is not found with a price less than or equal to the max_price search param' do
       search_param = 0.01
 
-      get get "/api/v1/items/find_all?max_price=#{search_param}"
+      get "/api/v1/items/find_all?max_price=#{search_param}"
 
       expect(response.status).to eq(404)
     end
@@ -364,7 +364,7 @@ RSpec.describe "Item endpoints", type: :request do
       search_param_min = 99999
       search_param_max = 999999999
 
-      get get "/api/v1/items/find_all?max_price=#{search_param_max}&min_price=#{search_param_min}"
+      get "/api/v1/items/find_all?max_price=#{search_param_max}&min_price=#{search_param_min}"
 
       expect(response.status).to eq(404)
     end

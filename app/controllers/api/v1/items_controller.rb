@@ -1,5 +1,6 @@
 class Api::V1::ItemsController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  
   def index
       items = Item.all
       options = {}
