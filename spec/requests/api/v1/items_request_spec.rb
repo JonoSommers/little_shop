@@ -258,8 +258,113 @@ RSpec.describe "Item endpoints", type: :request do
         unit_price: 159.25,
         merchant_id: merchant.id
       )
+      @item4 = Item.create(
+        name: "Nemo Touchadaboatbutt",
+        description: "Numquam officiis reprehenderit eum ratione neque tenetur. Officia aut repudiandae eum at ipsum doloribus. Iure minus itaque similique. Ratione dicta alias asperiores minima ducimus nesciunt at.",
+        unit_price: 2.25,
+        merchant_id: merchant.id
+      )
     end
-    it '' do
+
+    it 'returns all items that match the name search param' do
+      nemo_id_array = [@item1.id, @item4.id]
+      search_param = 'Nemo'
+
+      get "/api/v1/items/find_all?name=#{search_param}"
+
+      expect(response).to be_successful
+      
+      items = JSON.parse(response.body, symbolize_names: true)
+
+      expect(items[:data].count).to eq(2)
+      items[:data].each do |item|
+        expect(response.name).to satisfy { |name| name.include?(search_param) }
+        expect(response.id).to satisfy { |id| id_array.include?(id)}
+      end
+    end
+
+    it 'returns all items that are greater than or equal to the min_price search param' do
+      min_price_id_array = [@item2.id, @item3.id]
+      search_param = 150.00
+
+      get "/api/v1/items/find_all?min_price=#{search_param}"
+
+      expect(response).to be_successful
+
+      items = JSON.parse(response.body, symbolize_names: true)
+
+      expect(items[:data].count).to eq(2)
+      items[:data].each do |item|
+        expect(response.unit_price).to satisfy { |price| price >= search_param }
+        expect(response.id).to satisfy { |id| min_price_id_array.include?(id)}
+      end
+    end
+
+    it 'returns all items that are greater than or equal to the max_price search param' do
+      max_price_array = [@item1.id, @item4.id]
+      search_param = 150.00
+
+      get "/api/v1/items/find_all?max_price=#{search_param}"
+
+      expect(response).to be_successful
+
+      items = JSON.parse(response.body, symbolize_names: true)
+
+      expect(items[:data].count).to eq(2)
+      items[:data].each do |item|
+        expect(response.unit_price).to satisfy { |price| price <= search_param }
+        expect(response.id).to satisfy { |id| max_price_id_array.include?(id)}
+      end
+    end
+
+    it 'returns all items that are greater than or equal to the max_price search param' do
+      min_max_price_id_array = [@item1.id, @item3.id]
+      search_param_min = 40
+      search_param_max = 160
+
+      get "/api/v1/items/find_all?max_price=#{search_param_max}&minprice=#{search_param_min}"
+
+      expect(respose).to be_successful
+
+      items = JSON.parse(response.body, symbolize_names: true)
+      expect(items[:data].count).to eq(2)
+      items[:data].each do |item|
+        expect(response.unit_price).to satisfy { |price| price >= search_param_min && price <= search_param_max }
+        expect(response.id).to satisfy { |id| min_max_price_id_array.include?(id)}
+      end
+    end
+
+    it 'returns a 404 status code if an item is not found that satifies the name param' do
+      search_param = 'zxy'
+
+      get get "/api/v1/items/find_all?name=#{search_param}"
+
+      expect(response.status).to eq(404)
+    end
+
+    it 'returns a 404 status code if an item is not found with a price greater than or equal to the min_price search param' do
+      search_param = 9999999
+
+      get get "/api/v1/items/find_all?min_price=#{search_param}"
+
+      expect(response.status).to eq(404)
+    end
+
+    it 'returns a 404 status code if an item is not found with a price less than or equal to the max_price search param' do
+      search_param = 0.01
+
+      get get "/api/v1/items/find_all?max_price=#{search_param}"
+
+      expect(response.status).to eq(404)
+    end
+
+    it 'returns a 404 status code if an item is not found with a price between the min_price and max_price search param' do
+      search_param_min = 99999
+      search_param_max = 999999999
+
+      get get "/api/v1/items/find_all?max_price=#{search_param_max}&min_price=#{search_param_min}"
+
+      expect(response.status).to eq(404)
     end
   end
 end
