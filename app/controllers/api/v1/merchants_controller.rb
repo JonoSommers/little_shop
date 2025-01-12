@@ -1,6 +1,7 @@
 class Api::V1::MerchantsController < ApplicationController
   rescue_from ActionController::ParameterMissing, with: :render_unprocessable_entity
   rescue_from ActiveRecord::RecordNotDestroyed, with: :render_unprocessable_entity 
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   
   def index
       merchants = Merchant.all
@@ -59,5 +60,9 @@ class Api::V1::MerchantsController < ApplicationController
 
   def render_unprocessable_entity(exception)
     render json: { message: exception.message, errors: [exception.message] }, status: :unprocessable_entity
+  end
+
+  def record_not_found(exception)
+    render json: { message: exception.message, errors: [exception.message] }, status: :not_found
   end
 end
