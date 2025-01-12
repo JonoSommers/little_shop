@@ -1,4 +1,5 @@
 class Api::V1::ItemsController < ApplicationController
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   def index
       items = Item.all
       options = {}
@@ -37,5 +38,9 @@ class Api::V1::ItemsController < ApplicationController
 
   def item_params
     params.require(:item).permit(:name, :description, :unit_price, :merchant_id)
+  end
+
+  def record_not_found(exception)
+    render json: { message: exception.message, errors: [exception.message] }, status: :not_found
   end
 end
