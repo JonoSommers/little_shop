@@ -25,10 +25,5 @@ RSpec.describe 'Merchant_Items:', type: :request do
       expect{ Item.find(test_id) }.to raise_error(ActiveRecord::RecordNotFound)
       expect(response.status).to eq(404) 
     end
-
-    # Edge case
-    xit 'returns a 404 status code if item id is a string' do
-
-    end
   end
 end
