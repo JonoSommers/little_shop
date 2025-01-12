@@ -230,7 +230,7 @@ RSpec.describe "Item endpoints", type: :request do
     end
 
     it 'returns a 404 status code for a bad integer id' do
-      test_id = 999
+      test_id = 9999
       put "/api/v1/items/#{test_id}"
 
       expect(response.status).to eq(404) 
