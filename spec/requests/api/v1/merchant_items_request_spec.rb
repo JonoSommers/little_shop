@@ -23,10 +23,12 @@ RSpec.describe 'Merchant_Items:', type: :request do
       end
     end
 
-    xit 'returns a 404 status code when merchant is not found' do
-      
+    it 'returns a 404 status code when merchant is not found' do
+      test_id = 10
+      get "/api/v1/merchants/#{test_id}/items"
 
-      
+      expect{ Merchant.find(test_id) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect(response.status).to eq(404) 
     end
   end
 end
