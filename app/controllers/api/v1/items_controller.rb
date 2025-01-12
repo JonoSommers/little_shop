@@ -34,6 +34,32 @@ class Api::V1::ItemsController < ApplicationController
     render json: Item.destroy(params[:id])
   end
 
+  def find_all
+    options = {}
+    if params[:min_price].present? && params[:max_price].present?
+      min_price = params[:min_price]
+      max_price = params[:max_price]
+      items = Item.where(unit_price: min_price..max_price).order(:unit_price)
+      options[:meta] = {count: items.count}
+      render json: ItemSerializer.new(items, options)
+
+    elsif params[:min_price] == "#{params[:min_price]}"
+      items = Item.where("unit_price >= ?", params[:min_price]).order(:unit_price)
+      options[:meta] = {count: items.count}
+      render json: ItemSerializer.new(items, options)
+
+    elsif params[:max_price] == "#{params[:max_price]}"
+      items = Item.where("unit_price <= ?", params[:max_price]).order(:unit_price)
+      options[:meta] = {count: items.count}
+      render json: ItemSerializer.new(items, options)
+
+    elsif params[:name] == "#{params[:name]}"
+      items = Item.where("name ILIKE ?", "%#{params[:name]}%").order(:name)
+      options[:meta] = {count: items.count}
+      render json: ItemSerializer.new(items, options)
+    end
+  end
+
   private
 
   def item_params
