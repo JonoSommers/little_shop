@@ -2,6 +2,7 @@ class Api::V1::InvoicesController < ApplicationController
     def index
         invoices = Invoice.all
         options = {}
+        merchant = Merchant.find(params[:merchant_id])
         merchant_invoices = invoices.where(merchant_id: params[:merchant_id])
         if !params[:status].present?
             options[:meta] = {count: merchant_invoices.count}
