@@ -20,7 +20,7 @@ class Api::V1::MerchantsController < ApplicationController
       elsif params[:count] == 'true'
           options[:meta] = {count: merchants.count}
           render json: MerchantSerializer.new(merchants, options.merge({params: {item_count: params[:count]}}))
-
+          
       else
           options[:meta] = {count: merchants.count}
           render json: MerchantSerializer.new(merchants, options)
@@ -50,6 +50,16 @@ class Api::V1::MerchantsController < ApplicationController
   def destroy
     Merchant.destroy(params[:id]) 
     head :no_content
+  end
+
+  def find
+    merchants = Merchant.where("name ILIKE ?", "%#{params[:name]}%").order(:name)
+    merchant = merchants.first
+    if merchant.nil?
+      render json: { data: {} }
+    else
+      render json: MerchantSerializer.new(merchant)
+    end
   end
 
   private

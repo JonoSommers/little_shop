@@ -3,18 +3,9 @@ require 'rails_helper'
 RSpec.describe "Merchant endpoints", type: :request do
   describe 'Merchants', type: :request do
     it 'lists all merchants in the database' do
-
-        merchant1 = Merchant.create(
-            name: 'Jono'
-        )
-
-        merchant2 = Merchant.create(
-            name: 'Dustin'
-        )
-
-        merchant3 = Merchant.create(
-            name: 'Elysa'
-        )
+        merchant1 = Merchant.create( name: 'Jono' )
+        merchant2 = Merchant.create( name: 'Dustin' )
+        merchant3 = Merchant.create( name: 'Elysa')
 
         get "/api/v1/merchants"
 
@@ -295,6 +286,57 @@ RSpec.describe "Merchant endpoints", type: :request do
 
       expect(response.status).to eq(404)
       expect{ Merchant.find(test_id)}.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe 'Unrestful endpoint' do
+    before(:each) do
+      @merchant1 = Merchant.create( name: 'Jono' )
+      @merchant2 = Merchant.create( name: 'Dustin' )
+      @merchant3 = Merchant.create( name: 'Elysa')
+      @merchant4 = Merchant.create( name: 'Joe')
+    end
+
+    it 'can find a single merchant that matches the search param' do
+      search_param = 'Jono'
+      
+      get "/api/v1/merchants/find?name=#{search_param}"
+
+      expect(response).to be_successful
+
+      merchants = JSON.parse(response.body, symbolize_names: true)
+     
+      expect(merchants[:data][:attributes][:name]).to eq(search_param)
+    end
+
+    it 'returns the first merchant in the database in case-insensitive alphabetical order if multiple matches are found' do
+      search_param = 'jo'
+
+      get "/api/v1/merchants/find?name=#{search_param}"
+
+      
+      expect(response).to be_successful
+      merchants = JSON.parse(response.body, symbolize_names: true)
+      expect(merchants.length).to eq(1)
+      expect(merchants[:data][:attributes][:name]).to eq(@merchant4.name)
+    end
+
+    it 'returns the first merchant in the database in alphabetical order if multiple matches are found' do
+      get "/api/v1/merchants/find"
+
+      expect(response).to be_successful
+      merchants = JSON.parse(response.body, symbolize_names: true)
+      expect(merchants[:data][:attributes][:name]).to eq(@merchant2.name)
+    end
+
+    it 'still returns a 200 status code if a merchant is not found and data is nil' do
+      search_param = 'zxy1421'
+
+      get "/api/v1/merchants/find?name=#{search_param}"
+
+      merchant = JSON.parse(response.body, symbolize_names: true)
+      expect(response.status).to eq(200)
+      expect(response[:data]).to eq(nil)
     end
   end
 end

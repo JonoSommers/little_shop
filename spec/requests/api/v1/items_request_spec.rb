@@ -237,4 +237,180 @@ RSpec.describe "Item endpoints", type: :request do
       expect{ Item.find(test_id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  describe 'Unrestful endpoint' do
+    before(:each) do
+      @merchant = Merchant.create(name: 'Stank Face')
+
+      @item1 = Item.create(
+        name: "Item Nemo Facere",
+        description: "Sunt eum id eius magni consequuntur delectus veritatis. Quisquam laborum illo ut ab. Ducimus in est id voluptas autem.",
+        unit_price: 42.91,
+        merchant_id: @merchant.id
+      )
+      @item2 = Item.create(
+        name: "Item Expedita Aliquam",
+        description: "Voluptate aut labore qui illum tempore eius. Corrupti cum et rerum. Enim illum labore voluptatem dicta consequatur. Consequatur sunt consequuntur ut officiis.",
+        unit_price: 687.23,
+        merchant_id: @merchant.id
+      )
+      @item3 = Item.create(
+        name: "Item Provident At",
+        description: "Numquam officiis reprehenderit eum ratione neque tenetur. Officia aut repudiandae eum at ipsum doloribus. Iure minus itaque similique. Ratione dicta alias asperiores minima ducimus nesciunt at.",
+        unit_price: 159.25,
+        merchant_id: @merchant.id
+      )
+      @item4 = Item.create(
+        name: "Nemo Touchadaboatbutt",
+        description: "Numquam officiis reprehenderit eum ratione neque tenetur. Officia aut repudiandae eum at ipsum doloribus. Iure minus itaque similique. Ratione dicta alias asperiores minima ducimus nesciunt at.",
+        unit_price: 2.25,
+        merchant_id: @merchant.id
+      )
+    end
+
+    it 'returns all items that match the name search param' do
+      nemo_id_array = [@item1.id, @item4.id]
+      search_param = 'Nemo'
+
+      get "/api/v1/items/find_all?name=#{search_param}"
+
+      expect(response).to be_successful
+      
+      items = JSON.parse(response.body, symbolize_names: true)
+
+      expect(items[:data].count).to eq(2)
+      items[:data].each do |item|
+        expect(item[:attributes][:name]).to satisfy { |name| name.include?(search_param) }
+        expect(item[:id].to_i).to satisfy { |id| nemo_id_array.include?(id)}
+      end
+    end
+
+    it 'returns all items that are greater than or equal to the min_price search param' do
+      min_price_id_array = [@item2.id, @item3.id]
+      search_param = 150.00
+
+      get "/api/v1/items/find_all?min_price=#{search_param}"
+
+      expect(response).to be_successful
+
+      items = JSON.parse(response.body, symbolize_names: true)
+
+      expect(items[:data].count).to eq(2)
+      items[:data].each do |item|
+        expect(item[:attributes][:unit_price]).to satisfy { |unit_price| unit_price >= search_param }
+        expect(item[:id].to_i).to satisfy { |id| min_price_id_array.include?(id) }
+      end
+    end
+
+    it 'returns all items that are greater than or equal to the max_price search param' do
+      max_price_id_array = [@item1.id, @item4.id]
+      search_param = 150.00
+
+      get "/api/v1/items/find_all?max_price=#{search_param}"
+
+      expect(response).to be_successful
+
+      items = JSON.parse(response.body, symbolize_names: true)
+
+      expect(items[:data].count).to eq(2)
+      items[:data].each do |item|
+        expect(item[:attributes][:unit_price]).to satisfy { |unit_price| unit_price <= search_param }
+        expect(item[:id].to_i).to satisfy { |id| max_price_id_array.include?(id)}
+      end
+    end
+
+    it 'returns all items that are greater than or equal to the max_price search param' do
+      min_max_price_id_array = [@item1.id, @item3.id]
+      search_param_min = 40
+      search_param_max = 160
+
+      get "/api/v1/items/find_all?max_price=#{search_param_max}&min_price=#{search_param_min}"
+
+      expect(response).to be_successful
+
+      items = JSON.parse(response.body, symbolize_names: true)
+      expect(items.count).to eq(2)
+      items[:data].each do |item|
+        expect(item[:attributes][:unit_price]).to satisfy { |unit_price| unit_price >= search_param_min && unit_price <= search_param_max }
+        expect(item[:id].to_i).to satisfy { |id| min_max_price_id_array.include?(id)}
+      end
+    end
+
+    it 'returns a 404 status code if an item is not found that satifies the name param' do
+      search_param = 'zxy'
+
+      get "/api/v1/items/find_all?name=#{search_param}"
+      
+      expect(response.status).to eq(200)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 status code if an item is not found with a price greater than or equal to the min_price search param' do
+      search_param = 9999999
+
+      get "/api/v1/items/find_all?min_price=#{search_param}"
+
+      expect(response.status).to eq(200)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 status code if an item is not found with a price less than or equal to the max_price search param' do
+      search_param = 0.01
+
+      get "/api/v1/items/find_all?max_price=#{search_param}"
+
+      expect(response.status).to eq(200)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 status code if an item is not found with a price between the min_price and max_price search param' do
+      search_param_min = 99999
+      search_param_max = 999999999
+
+      get "/api/v1/items/find_all?max_price=#{search_param_max}&min_price=#{search_param_min}"
+
+      expect(response.status).to eq(200)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 if the user inputs name query param and the min_price query param' do
+      search_param_name = 'Justysa'
+      search_param_min_price = 1234
+
+      get "/api/v1/items/find_all?name=#{search_param_name}&min_price=#{search_param_min_price}"
+
+      expect(response.status).to eq(400)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 if the user inputs name query param and the max_price query param' do
+      search_param_name = 'Justysa'
+      search_param_max_price = 1
+
+      get "/api/v1/items/find_all?name=#{search_param_name}&max_price=#{search_param_max_price}"
+
+      expect(response.status).to eq(400)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 if the user inputs a negative min price' do
+      search_param_name = 'Justysa'
+      search_param_min_price = -1234
+
+      get "/api/v1/items/find_all?min_price=#{search_param_min_price}"
+
+      expect(response.status).to eq(400)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 if the user inputs a negative max price' do
+      search_param_name = 'Justysa'
+      search_param_max_price = -1
+
+      get "/api/v1/items/find_all?max_price=#{search_param_max_price}"
+
+      expect(response.status).to eq(400)
+      expect(response[:data]).to eq(nil)
+    end
+  end
 end
