@@ -336,7 +336,7 @@ RSpec.describe "Merchant endpoints", type: :request do
 
       merchant = JSON.parse(response.body, symbolize_names: true)
       expect(response.status).to eq(200)
-      expect(merchant[:data]).to eq(null)
+      expect(response[:data]).to eq(nil)
     end
   end
 end
