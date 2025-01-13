@@ -336,37 +336,81 @@ RSpec.describe "Item endpoints", type: :request do
       end
     end
 
-    xit 'returns a 404 status code if an item is not found that satifies the name param' do
+    it 'returns a 404 status code if an item is not found that satifies the name param' do
       search_param = 'zxy'
 
       get "/api/v1/items/find_all?name=#{search_param}"
-
-      expect(response.status).to eq(404)
+      
+      expect(response.status).to eq(200)
+      expect(response[:data]).to eq(nil)
     end
 
-    xit 'returns a 404 status code if an item is not found with a price greater than or equal to the min_price search param' do
+    it 'returns a 400 status code if an item is not found with a price greater than or equal to the min_price search param' do
       search_param = 9999999
 
       get "/api/v1/items/find_all?min_price=#{search_param}"
 
-      expect(response.status).to eq(404)
+      expect(response.status).to eq(200)
+      expect(response[:data]).to eq(nil)
     end
 
-    xit 'returns a 404 status code if an item is not found with a price less than or equal to the max_price search param' do
+    it 'returns a 400 status code if an item is not found with a price less than or equal to the max_price search param' do
       search_param = 0.01
 
       get "/api/v1/items/find_all?max_price=#{search_param}"
 
-      expect(response.status).to eq(404)
+      expect(response.status).to eq(200)
+      expect(response[:data]).to eq(nil)
     end
 
-    xit 'returns a 404 status code if an item is not found with a price between the min_price and max_price search param' do
+    it 'returns a 400 status code if an item is not found with a price between the min_price and max_price search param' do
       search_param_min = 99999
       search_param_max = 999999999
 
       get "/api/v1/items/find_all?max_price=#{search_param_max}&min_price=#{search_param_min}"
 
-      expect(response.status).to eq(404)
+      expect(response.status).to eq(200)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 if the user inputs name query param and the min_price query param' do
+      search_param_name = 'Justysa'
+      search_param_min_price = 1234
+
+      get "/api/v1/items/find_all?name=#{search_param_name}&min_price=#{search_param_min_price}"
+
+      expect(response.status).to eq(400)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 if the user inputs name query param and the max_price query param' do
+      search_param_name = 'Justysa'
+      search_param_max_price = 1
+
+      get "/api/v1/items/find_all?name=#{search_param_name}&max_price=#{search_param_max_price}"
+
+      expect(response.status).to eq(400)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 if the user inputs a negative min price' do
+      search_param_name = 'Justysa'
+      search_param_min_price = -1234
+
+      get "/api/v1/items/find_all?min_price=#{search_param_min_price}"
+
+      expect(response.status).to eq(400)
+      expect(response[:data]).to eq(nil)
+    end
+
+    it 'returns a 400 if the user inputs a negative max price' do
+      search_param_name = 'Justysa'
+      search_param_max_price = -1
+
+      get "/api/v1/items/find_all?max_price=#{search_param_max_price}"
+
+      expect(response.status).to eq(400)
+      expect(response[:data]).to eq(nil)
     end
   end
 end
