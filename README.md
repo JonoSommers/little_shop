@@ -1,6 +1,6 @@
 # README
 
-* Ruby version
+* Ruby/Rails version
 We are working with:
     Ruby 3.2.2
     Rails 7.1.5.1
